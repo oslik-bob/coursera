@@ -39,6 +39,7 @@ import asyncio
 import logging
 import concurrent.futures
 
+
 def run_server(host, port):
     loop = asyncio.get_event_loop()
     coro = loop.create_server(
@@ -59,16 +60,42 @@ def run_server(host, port):
 
 
 class ClientServerProtocol(asyncio.Protocol):
+    
+    def __init__(self,metrix=dict()):
+        self.metrix=metrix
+    
     def connection_made(self, transport):
         self.transport = transport
 
-    def data_received(self, data):
-        resp = self.process_data(data.decode())
-        self.transport.write(resp.encode())
 
-    def process_data(self, data):
-        print (data)
-        pass
+    def data_received(self, data):
+        resp = self.data_decode(data)
+        
+
+            #self.transport.write(resp)
+
+    def data_decode(self, data):
+        try:
+            data=data.decode()
+            comm,metrix,*value=data.split(' ')
+            if comm =='put':
+                if metrix in self.metrix:
+                    self.metrix[metrix].append(value)
+                    print (self.metrix)
+                else:
+                    self.metrix[metrix]=[value]
+                    print (self.metrix)
+            elif comm == 'get':
+                
+                print(comm)
+            else: raise ValueError
+        except ValueError:
+            print('ValueError')
+        else:
+            print("else try")
+        return data    
+    
+    
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
 

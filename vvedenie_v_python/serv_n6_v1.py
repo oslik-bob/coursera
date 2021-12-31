@@ -1,6 +1,7 @@
 import asyncio
 import re
 
+
 def run_server(host, port):
     #запуск сервера
     loop = asyncio.get_event_loop()
@@ -23,15 +24,52 @@ def run_server(host, port):
 
 class ClientServerProtocol(asyncio.Protocol):
     
+<<<<<<< HEAD
+    def __init__(self,metrix=dict()):
+        self.metrix=metrix
+    
+=======
     def __init__(self, meta_rec=dict()):
         self.meta_rec=meta_rec
         
         
+>>>>>>> 281a3def2e0e71b8c2d5b4df47caff5321d01293
     def connection_made(self, transport):
         self.transport = transport
 
 
     def data_received(self, data):
+<<<<<<< HEAD
+        resp = self.data_decode(data)
+        
+
+            #self.transport.write(resp)
+
+    def data_decode(self, data):
+        try:
+            data=data.decode()
+            comm,metrix,*value=data.split(' ')
+            if comm =='put':
+                if metrix in self.metrix:
+                    self.metrix[metrix].append(value)
+                    print (self.metrix)
+                else:
+                    self.metrix[metrix]=[value]
+                    print (self.metrix)
+            elif comm == 'get':
+                
+                print(comm)
+            else: raise ValueError
+        except ValueError:
+            print('ValueError')
+        else:
+            print("else try")
+        return data    
+    
+    
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+=======
         print(data.decode('utf8'))
         resp = self.process_data(data.decode())
         
@@ -106,6 +144,7 @@ class ClientServerProtocol(asyncio.Protocol):
             elif data.split()[0] == 'get':
                 _, meta=data.split()
                 met=meta.strip('\n\r ')
+>>>>>>> 281a3def2e0e71b8c2d5b4df47caff5321d01293
 
                 if str(met).strip("\r \n")=='*':
                     return 'ok\n'+self._get_all()+'\n'

@@ -1,0 +1,29 @@
+Levels = yaml.load(
+'''
+levels:
+    - !easy_level {}
+    - !medium_level
+        enemy: ['rat']
+    - !hard_level
+        enemy:
+            - rat
+            - snake
+            - dragon
+        enemy_count: 10
+''')
+
+
+'''Levels = {'levels':[]}
+_map = EasyLevel.Map()
+_obj = EasyLevel.Objects()
+Levels['levels'].append({'map': _map, 'obj': _obj})
+
+_map = MediumLevel.Map()
+_obj = MediumLevel.Objects()
+_obj.config = {'enemy':['rat']}
+Levels['levels'].append({'map': _map, 'obj': _obj})
+
+_map = HardLevel.Map()
+_obj = HardLevel.Objects()
+_obj.config = {'enemy': ['rat', 'snake', 'dragon'], 'enemy_count': 10}
+Levels['levels'].append({'map': _map, 'obj': _obj})'''

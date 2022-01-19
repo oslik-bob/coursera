@@ -1,52 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-Created on Mon Jan 17 14:09:49 2022
+Created on Tue Jan 18 11:47:19 2022
 
 @author: kali
-
-
-Levels = {'levels':[]}
-_map = EasyLevel.Map()
-_obj = EasyLevel.Objects()
-Levels['levels'].append({'map': _map, 'obj': _obj})
-
-_map = MediumLevel.Map()
-_obj = MediumLevel.Objects()
-_obj.config = {'enemy':['rat']}
-Levels['levels'].append({'map': _map, 'obj': _obj})
-
-_map = HardLevel.Map()
-_obj = HardLevel.Objects()
-_obj.config = {'enemy': ['rat', 'snake', 'dragon'], 'enemy_count': 10}
-Levels['levels'].append({'map': _map, 'obj': _obj})'''
 """
+
 
 import random
 import yaml
 from abc import ABC
 
 
-Levels = yaml.load(
-'''
-levels:
-    - !easy_level {}
-    - !medium_level
-        enemy: ['rat']
-    - !hard_level
-        enemy:
-            - rat
-            - snake
-            - dragon
-        enemy_count: 10
-''')
-
-
 class AbstractLevel(yaml.YAMLObject):
+    
     @classmethod
-    def fack_constr(cls):
-        pass
+    def from_yaml(cls, loader, node):
 
+        def get_level(loader, node):
+            data = loader.construct_mapping(node)
+            level = {'map': cls.get_map(), 'obj': cls.get_objects()}
+            level['obj'].config = data
+            return level
+        
+        return get_level(loader, node)
+    
     @classmethod
     def get_map(cls):
         return cls.Map()
@@ -63,6 +42,7 @@ class AbstractLevel(yaml.YAMLObject):
 
 
 class EasyLevel(AbstractLevel):
+    yaml_tag=u'!easy_level'
     
     class Map:
         def __init__(self):
@@ -79,7 +59,7 @@ class EasyLevel(AbstractLevel):
         
         
 
-    class Objects:
+    class Objects(yaml.YAMLObject):
         def __init__(self):
             self.objects = [('next_lvl', (2, 2))]
             self.config = {}
@@ -101,6 +81,9 @@ class EasyLevel(AbstractLevel):
 
 
 class MediumLevel(AbstractLevel):
+    
+    yaml_tag=u'!medium_level'
+    
     class Map:
         def __init__(self):
             self.Map = [[0 for _ in range(8)] for _ in range(8)]
@@ -114,7 +97,7 @@ class MediumLevel(AbstractLevel):
         def get_map(self):
             return self.Map
 
-    class Objects:
+    class Objects(yaml.YAMLObject):
         def __init__(self):
             self.objects = [('next_lvl', (4, 4))]
             self.config = {'enemy': []}
@@ -136,6 +119,9 @@ class MediumLevel(AbstractLevel):
 
 
 class HardLevel(AbstractLevel):
+    
+    yaml_tag=u'!hard_level'
+    
     class Map:
         def __init__(self):
             self.Map = [[0 for _ in range(10)] for _ in range(10)]
@@ -149,7 +135,7 @@ class HardLevel(AbstractLevel):
         def get_map(self):
             return self.Map
 
-    class Objects:
+    class Objects(yaml.YAMLObject):
         def __init__(self):
             self.objects = [('next_lvl', (5, 5))]
             self.config = {'enemy_count': 5, 'enemy': []}

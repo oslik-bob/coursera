@@ -1,4 +1,48 @@
-"""import click
+#"""
+import click
+import scapy.all as sc
+from scapy.config import conf
+import asyncio
+
+conf.verb = 0
+
+
+@click.command()
+@click.option('--ip', '-m', multiple=True)
+def scan(ip):
+    return [scan_local_network(i) for i in ip]
+    
+    
+    
+async def scan_local_network(ip):
+        ether_layer = sc.Ether(dst="ff:ff:ff:ff:ff:ff")
+        arp_layer = sc.ARP(pdst=ip)
+        print('scan_local_network',ip)
+        arp_request = ether_layer / arp_layer
+        answered = sc.srp(arp_request, timeout=10)[0]
+        print(ip, 00000)
+        result = 'available' if answered else 'not available'
+        print(f'{ip}| {result}')
+        await asyncio.sleep(0)
+        
+if __name__ == "__main__":
+    corutines=scan()
+    print(corutines)
+    while True:
+        for cor in corutines.copy():
+            try:
+                print(cor)
+                cor.send(None)
+                print(2)
+                print(len(cor))
+            except StopIteration:
+                corutines.remove(cor)
+            if len(corutines)==0:
+                print(len(corutines), 'break')
+                break
+
+"""
+import click
 import scapy.all as sc
 from scapy.config import conf
 import asyncio
@@ -47,7 +91,7 @@ if __name__ == "__main__":
     scan_local_network()
 
 
-
+#"""
 """
 import multiprocessing as mp
 import click
@@ -78,3 +122,4 @@ def scan(ip):
         
 if __name__ == "__main__":
     scan_local_network()
+#"""
